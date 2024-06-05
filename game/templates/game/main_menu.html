@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url('{% static "images/mainmenu.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        .text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-family: 'cursive', sans-serif;
+            color: #FFF;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .button {
+            position: absolute;
+            padding: 12px 24px;
+            font-size: 36px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Arial', sans-serif;
+            color: #FFFF00;
+            background-color: rgba(0, 0, 255, 0.7);
+        }
+
+        #playButton {
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 0, 0.7);
+            color: darkblue;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="text">Imaginarium</div>
+    <form action="{% url 'select_game' %}">
+        <button id="playButton" class="button">Play</button>
+    </form>
+</body>
+</html>

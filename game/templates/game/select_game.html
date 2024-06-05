@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Select</title>
+    {% load static %}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-image: url('{% static "images/create_or_find_game.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        .text {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 45px;
+            font-family: 'cursive', sans-serif;
+            color: #FFF;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            background-color: orange;
+            border: none;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        #back-button {
+            top: 3px;
+            left: 3px;
+            transform: none;
+        }
+        #find-game {
+            left: 30%;
+        }
+        #create-game {
+            right: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div class="text">Select game</div>
+    <form action="{% url 'create_game' %}">
+        <button type="submit" id="create-game" class="button">Create game</button>
+    </form>
+    <form action="{% url 'join_game' %}">
+        <button type="submit" id="find-game" class="button">Find game</button>
+    </form>
+    <form action="{% url 'main_menu' %}">
+        <button type="submit" id="back-button" class="button"><img src="{% static 'images/back.png' %}" alt="Back"></button>
+    </form>
+</body>
+</html>

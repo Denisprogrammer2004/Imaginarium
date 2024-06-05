@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Board</title>
+    {% load static %}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-image: url('{% static "images/game_field.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+        .text {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-family: 'cursive', sans-serif;
+            color: #FFF;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        .cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 100px;
+        }
+        .card {
+            margin: 10px;
+            border: 2px solid white;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            width: 150px;
+            height: 200px;
+            background-size: cover;
+        }
+        .selected {
+            border: 2px solid red;
+        }
+        .hand {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+        }
+        .hand .card {
+            margin: 10px;
+        }
+        .input-group {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .input-group input, .input-group button {
+            margin: 5px 0;
+        }
+        .scoreboard {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            border: 1px solid black;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .scoreboard table {
+            width: 100%;
+        }
+        .scoreboard th, .scoreboard td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% if not game.current_player.is_bot %}
+        <div class="input-group">
+            <label for="association-input">Ассоциация:</label>
+            <input type="text" id="association-input" placeholder="Введите ассоциацию">
+            <button onclick="submitAssociation('{{ game.id }}')">Отправить</button>
+        </div>
+    {% endif %}
+    <div class="cards">
+        {% if current_round.association %}
+            {% for card in selected_cards %}
+                <div class="card" style="background-image: url('{{ card.image.url }}');">
+                    {{ card.description }}
+                </div>
+            {% endfor %}
+            {% for card in bot_selected_cards %}
+                <div class="card" style="background-image: url('{{ card.image.url }}');">
+                    {{ card.description }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="hand">
+        {% for player_card in player_cards %}
+            <div class="card" data-card-id="{{ player_card.card.id }}" onclick="chooseCard({{ player_card.card.id }})" style="background-image: url('{{ player_card.card.image.url }}');">
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="scoreboard">
+        <table>
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Баллы</th>
+                </tr>
+            </thead>
+            <tbody id="score-table-body">
+                {% for player in players %}
+                    <tr>
+                        <td>{{ player.name }}</td>
+                        <td>{{ player.score }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+        let selectedCardId = null;
+
+        function chooseCard(cardId) {
+            selectedCardId = cardId;
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-card-id="${cardId}"]`).classList.add('selected');
+            console.log("Card selected: ", cardId);
+        }
+
+        function submitAssociation(gameId) {
+            const association = document.getElementById('association-input').value;
+            console.log("Submitting association: ", association);
+            if (selectedCardId && association) {
+                console.log("Sending AJAX request with card_id: ", selectedCardId, " and association: ", association);
+                fetch(`/submit_association/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        game_id: gameId,
+                        card_id: selectedCardId,
+                        association: association,
+                    })
+                }).then(response => {
+                    console.log("Response received");
+                    if (response.ok) {
+                        console.log("Response OK");
+                        return response.json();
+                    } else {
+                        console.log("Response NOT OK");
+                        return response.json();
+                    }
+                }).then(data => {
+                    console.log("Response data: ", data);
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        console.error("Error: ", data.error);
+                    }
+                }).catch(error => {
+                    console.error("Error during fetch: ", error);
+                });
+            } else {
+                alert('Выберите карту и введите ассоциацию!');
+            }
+        }
+    </script>
+</body>
+</html>

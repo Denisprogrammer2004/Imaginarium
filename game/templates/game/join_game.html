@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Join Game</title>
+    {% load static %}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-image: url('{% static "images/create_or_find_game.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        .text {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            font-family: 'cursive', sans-serif;
+            color: #FFF;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            background-color: orange;
+            border: none;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        #back-button {
+            top: 3px;
+            left: 3px;
+            transform: none;
+        }
+        .form-container {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -10%);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+        .form-container label, .form-container input {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="text">Join Game</div>
+    <div class="form-container">
+        <h1>Введите код-приглашение</h1>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="invite_code" required>
+            <br>
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+    <form action="{% url 'select_game' %}">
+        <button type="submit" id="back-button" class="button"><img src="{% static 'images/back.png' %}" alt="Back"></button>
+    </form>
+</body>
+</html>
